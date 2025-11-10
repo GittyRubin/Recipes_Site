@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍳 Recipe Hub - Complete Cooking Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #74b9ff;
+            --accent: #00b894;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --error: #e17055;
+            --bg-gradient: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #2d3436;
+            --text-light: #636e72;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --radius: 20px;
+            --glass: rgba(255,255,255,0.25);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            --card-bg: rgba(45, 52, 54, 0.95);
+            --text-dark: #ddd;
+            --text-light: #b2bec3;
+            --glass: rgba(45, 52, 54, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .app-logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.3);
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(-10px) rotate(5deg) scale(1.05); }
+        }
+
+        .app-title {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(45deg, #fff, #f8f9fa, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: var(--glass);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.3);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(69, 183, 209, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.8);
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(69, 183, 209, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--text-dark);
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .recipe-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .recipe-emoji {
+            font-size: 3em;
+            text-align: center;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .recipe-name {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .meta-item {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .time-meta { background: var(--warning); color: var(--text-dark); }
+        .difficulty-easy { background: var(--success); color: var(--text-dark); }
+        .difficulty-medium { background: var(--warning); color: var(--text-dark); }
+        .difficulty-hard { background: var(--primary); color: white; }
+
+        .favorite-heart {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .favorite-heart:hover {
+            transform: scale(1.3);
+        }
+
+        .favorite-heart.active {
+            color: #ff6b6b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: var(--radius);
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: var(--primary);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 0 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .category-filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 0.9em;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: center;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .settings-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .range-value {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .ingredient-list, .instruction-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .ingredient-item, .instruction-item {
+            background: rgba(255,255,255,0.5);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-btn {
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .app-title { font-size: 2.5em; }
+            .recipe-grid { grid-template-columns: 1fr; }
+            .nav-bar { flex-direction: column; align-items: center; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="app-logo">
+                <div class="app-logo-icon">🍳</div>
+                <h1 class="app-title">Recipe Hub</h1>
+            </div>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 20px;">Your complete cooking platform</p>
+            
+            <div class="nav-bar">
+                <button class="nav-btn active" onclick="showSection('home')">🏠 Home</button>
+                <button class="nav-btn" onclick="showSection('recipes')">🍳 Recipes</button>
+                <button class="nav-btn" onclick="showSection('create')">➕ Create</button>
+                <button class="nav-btn" onclick="showSection('calculator')">📊 Calculator</button>
+                <button class="nav-btn" onclick="showSection('dashboard')">📈 Dashboard</button>
+                <button class="nav-btn" onclick="showSection('settings')">⚙️ Settings</button>
+                <button class="nav-btn" onclick="showSection('login')">👤 Login</button>
+                <button class="nav-btn" onclick="toggleTheme()">🌙 Theme</button>
+            </div>
+        </div>
+
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">25</span>
+                    <span class="stat-label">Amazing Recipes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">Categories</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Delicious</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 20px;">🌟 Welcome to Recipe Hub</h2>
+                <p style="text-align: center; color: var(--text-light); line-height: 1.6;">
+                    Discover amazing recipes, create your own culinary masterpieces, and join our cooking community. 
+                    With advanced features like voice reading, smart timers, and ingredient calculators, 
+                    cooking has never been easier!
+                </p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="showSection('recipes')">🚀 Start Cooking</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipes Section -->
+        <div id="recipes" class="section">
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Search recipes or ingredients..." oninput="searchRecipes()">
+                <span class="search-icon">🔍</span>
+            </div>
+            
+            <div class="category-filters">
+                <button class="category-btn active" onclick="filterByCategory('all')">🍽️ All</button>
+                <button class="category-btn" onclick="filterByCategory('main')">🍖 Main</button>
+                <button class="category-btn" onclick="filterByCategory('dessert')">🍰 Desserts</button>
+                <button class="category-btn" onclick="filterByCategory('soup')">🍲 Soups</button>
+                <button class="category-btn" onclick="filterByCategory('salad')">🥗 Salads</button>
+                <button class="category-btn" onclick="filterByCategory('vegetarian')">🥬 Vegetarian</button>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn btn-success" onclick="toggleFavorites()">❤️ Show Favorites</button>
+            </div>
+
+            <div class="recipe-grid" id="recipe-list"></div>
+        </div>
+
+        <!-- Create Recipe Section -->
+        <div id="create" class="section">
+            <div class="card">
+                <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 30px;">➕ Create New Recipe</h2>
+                
+                <div class="form-grid">
+                    <div>
+                        <div class="input-group">
+                            <label class="input-label">Recipe Name</label>
+                            <input type="text" class="input-field" id="recipe-name" placeholder="Enter recipe name">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">Cooking Time</label>
+                            <input type="text" class="input-field" id="cook-time" placeholder="e.g., 30 mins">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Difficulty</label>
+                            <select class="input-field" id="difficulty">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Category</label>
+                            <select class="input-field" id="category">
+                                <option value="main">Main Dishes</option>
+                                <option value="dessert">Desserts</option>
+                                <option value="soup">Soups</option>
+                                <option value="salad">Salads</option>
+                                <option value="vegetarian">Vegetarian</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Emoji</label>
+                            <input type="text" class="input-field" id="recipe-emoji" placeholder="🍝" maxlength="2">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="input-group">
+                            <label class="input-label">Add Ingredient</label>
+                            <input type="text" class="input-field" id="ingredient-input" placeholder="e.g., 2 cups flour">
+                            <button class="btn btn-success" onclick="addIngredient()" style="margin-top: 10px;">Add</button>
+                        </div>
+                        <ul class="ingredient-list" id="ingredient-list"></ul>
+
+                        <div class="input-group">
+                            <label class="input-label">Add Instruction</label>
+                            <textarea class="input-field" id="instruction-input" placeholder="Add cooking step" rows="3"></textarea>
+                            <button class="btn btn-success" onclick="addInstruction()" style="margin-top: 10px;">Add Step</button>
+                        </div>
+                        <ol class="instruction-list" id="instruction-list"></ol>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveRecipe()" style="width: 100%; margin-top: 20px;">🚀 Save Recipe</button>
+            </div>
+        </div>
+
+        <!-- Calculator Section -->
+        <div id="calculator" class="section">
+            <div class="card">
+                <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 30px;">📊 Quantity Calculator</h2>
+                
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <label style="color: var(--text-dark); font-weight: 500;">Servings:</label>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 10px;">
+                        <button class="btn btn-primary" onclick="changeServings(-1)">-</button>
+                        <span id="serving-count" style="font-size: 1.5em; font-weight: 600; color: var(--text-dark); min-width: 40px;">4</span>
+                        <button class="btn btn-primary" onclick="changeServings(1)">+</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Select Recipe for Calculation</label>
+                    <select class="input-field" id="calc-recipe" onchange="updateCalculation()">
+                        <option value="">Choose a recipe...</option>
+                    </select>
+                </div>
+
+                <div id="calculation-result" style="display: none;">
+                    <h3 style="color: var(--text-dark); margin-bottom: 15px;">📋 Adjusted Ingredients</h3>
+                    <div id="adjusted-ingredients"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="recipes-tried">0</span>
+                    <span class="stat-label">Recipes Tried</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="favorites-count">0</span>
+                    <span class="stat-label">Favorites</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="user-recipes-count">0</span>
+                    <span class="stat-label">Your Recipes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="cooking-level">1</span>
+                    <span class="stat-label">Cooking Level</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 20px;">📈 Your Cooking Journey</h2>
+                <p style="text-align: center; color: var(--text-light);">
+                    Track your progress, discover new recipes, and become a master chef!
+                </p>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="section">
+            <div class="card">
+                <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 30px;">⚙️ Settings</h2>
+                
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <span>🎨</span>
+                        <span>Display Settings</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">🌙 Theme</label>
+                        <select class="input-field" id="theme-selector" onchange="selectTheme(this.value)">
+                            <option value="light">☀️ Light Theme</option>
+                            <option value="dark">🌙 Dark Theme</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">🎨 Recipe Card Color</label>
+                        <input type="color" class="input-field" id="recipe-color" value="#6c5ce7">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <span>🔊</span>
+                        <span>Voice & Audio Settings</span>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">⏱️ Reading Speed (seconds between lines)</label>
+                        <div class="range-container">
+                            <input type="range" class="input-field" id="wait-time" min="1" max="10" value="3" oninput="updateWaitTime(this.value)" style="flex: 1;">
+                            <span class="range-value" id="wait-time-value">3s</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">🎤 Voice Selection</label>
+                        <select class="input-field" id="voice-selector" onchange="updateVoiceSelection()">
+                            <option value="">Loading voices...</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">🚀 Voice Speed</label>
+                        <div class="range-container">
+                            <input type="range" class="input-field" id="voice-rate" min="0.5" max="2" step="0.1" value="0.8" oninput="updateVoiceRate(this.value)" style="flex: 1;">
+                            <span class="range-value" id="voice-rate-value">0.8x</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">🎵 Voice Pitch</label>
+                        <div class="range-container">
+                            <input type="range" class="input-field" id="voice-pitch" min="0.5" max="2" step="0.1" value="1" oninput="updateVoicePitch(this.value)" style="flex: 1;">
+                            <span class="range-value" id="voice-pitch-value">1.0</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <button class="btn btn-success" onclick="testVoice()" style="width: 100%; font-size: 1.1em;">🎤 Test Voice Settings</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%; margin-top: 20px; font-size: 1.2em; padding: 15px;">💾 Save All Settings</button>
+            </div>
+        </div>
+
+        <!-- Login Section -->
+        <div id="login" class="section">
+            <div class="card" style="max-width: 500px; margin: 0 auto;">
+                <div id="login-form">
+                    <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 30px;">👤 Login</h2>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Username</label>
+                        <input type="text" class="input-field" id="login-name" placeholder="Enter username">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Password</label>
+                        <input type="password" class="input-field" id="login-password" placeholder="Enter password">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="submitLogin()" style="width: 100%;">Sign In</button>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="toggleLoginForm()" style="background: none; color: var(--accent);">Create Account</button>
+                    </div>
+                </div>
+
+                <div id="register-form" style="display: none;">
+                    <h2 style="text-align: center; color: var(--text-dark); margin-bottom: 30px;">📝 Register</h2>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Full Name</label>
+                        <input type="text" class="input-field" id="register-name" placeholder="Enter full name">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Password</label>
+                        <input type="password" class="input-field" id="register-password" placeholder="Create password">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Phone</label>
+                        <input type="tel" class="input-field" id="register-phone" placeholder="050-1234567">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="submitRegister()" style="width: 100%;">Create Account</button>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="toggleLoginForm()" style="background: none; color: var(--accent);">Back to Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal()">×</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSection = 'home';
+        let currentUser = null;
+        let isLoggedIn = false;
+        let favorites = [];
+        let userRecipes = [];
+        let ingredients = [];
+        let instructions = [];
+        let currentServings = 4;
+        let showFavoritesOnly = false;
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Sample recipes data
+        const recipes = [
+            { name: "Spaghetti Carbonara", cookTime: "25 mins", difficulty: "Medium", emoji: "🍝", rating: 5, category: "main", ingredients: ["400g spaghetti", "200g pancetta", "4 eggs", "100g Pecorino", "Black pepper"], instructions: "1. Cook pasta\n2. Fry pancetta\n3. Mix eggs and cheese\n4. Combine all" },
+            { name: "Chocolate Cookies", cookTime: "30 mins", difficulty: "Easy", emoji: "🍪", rating: 5, category: "dessert", ingredients: ["200g flour", "100g sugar", "100g butter", "1 egg", "Chocolate chips"], instructions: "1. Mix ingredients\n2. Form cookies\n3. Bake 12 mins" },
+            { name: "Caesar Salad", cookTime: "15 mins", difficulty: "Easy", emoji: "🥗", rating: 4, category: "salad", ingredients: ["Romaine lettuce", "Caesar dressing", "Croutons", "Parmesan"], instructions: "1. Chop lettuce\n2. Add dressing\n3. Top with croutons" },
+            { name: "Tomato Soup", cookTime: "30 mins", difficulty: "Easy", emoji: "🍅", rating: 4, category: "soup", ingredients: ["Tomatoes", "Onion", "Garlic", "Cream", "Basil"], instructions: "1. Sauté onions\n2. Add tomatoes\n3. Simmer and blend" },
+            { name: "Veggie Stir Fry", cookTime: "20 mins", difficulty: "Easy", emoji: "🥬", rating: 4, category: "vegetarian", ingredients: ["Mixed vegetables", "Soy sauce", "Garlic", "Ginger", "Oil"], instructions: "1. Heat oil\n2. Add vegetables\n3. Stir fry with sauce" },
+            { name: "Beef Tacos", cookTime: "20 mins", difficulty: "Easy", emoji: "🌮", rating: 5, category: "main", ingredients: ["Ground beef", "Taco shells", "Lettuce", "Tomatoes", "Cheese", "Sour cream"], instructions: "1. Cook ground beef\n2. Season with spices\n3. Warm taco shells\n4. Assemble with toppings" },
+            { name: "Chicken Curry", cookTime: "45 mins", difficulty: "Medium", emoji: "🍛", rating: 5, category: "main", ingredients: ["Chicken breast", "Coconut milk", "Curry powder", "Onion", "Garlic", "Rice"], instructions: "1. Sauté onions and garlic\n2. Add chicken and curry powder\n3. Pour coconut milk\n4. Simmer 30 minutes\n5. Serve with rice" },
+            { name: "Greek Salad", cookTime: "10 mins", difficulty: "Easy", emoji: "🥙", rating: 4, category: "salad", ingredients: ["Cucumber", "Tomatoes", "Feta cheese", "Olives", "Red onion", "Olive oil"], instructions: "1. Chop vegetables\n2. Add feta and olives\n3. Drizzle with olive oil\n4. Season with herbs" },
+            { name: "Pancakes", cookTime: "15 mins", difficulty: "Easy", emoji: "🥞", rating: 5, category: "dessert", ingredients: ["Flour", "Milk", "Eggs", "Sugar", "Baking powder", "Butter"], instructions: "1. Mix dry ingredients\n2. Combine wet ingredients\n3. Mix batter\n4. Cook on griddle\n5. Serve with syrup" },
+            { name: "Fish and Chips", cookTime: "35 mins", difficulty: "Medium", emoji: "🍟", rating: 4, category: "main", ingredients: ["White fish", "Potatoes", "Flour", "Beer", "Oil for frying"], instructions: "1. Cut potatoes into chips\n2. Make beer batter\n3. Coat fish in batter\n4. Deep fry chips and fish\n5. Serve hot" },
+            { name: "Mushroom Risotto", cookTime: "40 mins", difficulty: "Hard", emoji: "🍄", rating: 5, category: "vegetarian", ingredients: ["Arborio rice", "Mushrooms", "Vegetable stock", "White wine", "Parmesan", "Butter"], instructions: "1. Sauté mushrooms\n2. Toast rice\n3. Add wine\n4. Gradually add warm stock\n5. Stir in cheese and butter" },
+            { name: "Chicken Noodle Soup", cookTime: "50 mins", difficulty: "Medium", emoji: "🍜", rating: 4, category: "soup", ingredients: ["Chicken breast", "Egg noodles", "Carrots", "Celery", "Onion", "Chicken broth"], instructions: "1. Boil chicken breast\n2. Shred chicken\n3. Sauté vegetables\n4. Add broth and noodles\n5. Simmer until tender" },
+            { name: "Chocolate Cake", cookTime: "60 mins", difficulty: "Medium", emoji: "🎂", rating: 5, category: "dessert", ingredients: ["Flour", "Cocoa powder", "Sugar", "Eggs", "Butter", "Baking powder"], instructions: "1. Mix dry ingredients\n2. Cream butter and sugar\n3. Add eggs\n4. Combine mixtures\n5. Bake 45 minutes" },
+            { name: "Caprese Salad", cookTime: "5 mins", difficulty: "Easy", emoji: "🍅", rating: 4, category: "salad", ingredients: ["Fresh mozzarella", "Tomatoes", "Fresh basil", "Balsamic vinegar", "Olive oil"], instructions: "1. Slice tomatoes and mozzarella\n2. Arrange with basil leaves\n3. Drizzle with oil and vinegar\n4. Season with salt and pepper" },
+            { name: "Beef Stew", cookTime: "2 hours", difficulty: "Medium", emoji: "🥩", rating: 5, category: "main", ingredients: ["Beef chunks", "Potatoes", "Carrots", "Onion", "Beef broth", "Red wine"], instructions: "1. Brown beef chunks\n2. Sauté vegetables\n3. Add broth and wine\n4. Simmer 1.5 hours\n5. Add potatoes last 30 minutes" },
+            { name: "Lemon Bars", cookTime: "45 mins", difficulty: "Medium", emoji: "🍋", rating: 4, category: "dessert", ingredients: ["Flour", "Butter", "Sugar", "Eggs", "Lemon juice", "Powdered sugar"], instructions: "1. Make shortbread crust\n2. Bake crust 15 minutes\n3. Mix lemon filling\n4. Pour over crust\n5. Bake 25 more minutes" },
+            { name: "Minestrone Soup", cookTime: "40 mins", difficulty: "Easy", emoji: "🥣", rating: 4, category: "soup", ingredients: ["Mixed vegetables", "Beans", "Pasta", "Vegetable broth", "Tomatoes", "Herbs"], instructions: "1. Sauté vegetables\n2. Add broth and tomatoes\n3. Add beans and pasta\n4. Simmer until tender\n5. Season with herbs" },
+            { name: "Stuffed Peppers", cookTime: "50 mins", difficulty: "Medium", emoji: "🫑", rating: 4, category: "main", ingredients: ["Bell peppers", "Ground beef", "Rice", "Onion", "Cheese", "Tomato sauce"], instructions: "1. Hollow out peppers\n2. Cook rice and beef\n3. Mix filling\n4. Stuff peppers\n5. Bake 35 minutes" },
+            { name: "Apple Pie", cookTime: "75 mins", difficulty: "Hard", emoji: "🥧", rating: 5, category: "dessert", ingredients: ["Apples", "Pie crust", "Sugar", "Cinnamon", "Butter", "Flour"], instructions: "1. Make pie crust\n2. Slice apples\n3. Mix with sugar and spices\n4. Fill crust\n5. Bake 45 minutes" },
+            { name: "Quinoa Bowl", cookTime: "25 mins", difficulty: "Easy", emoji: "🥗", rating: 4, category: "vegetarian", ingredients: ["Quinoa", "Avocado", "Black beans", "Corn", "Lime", "Cilantro"], instructions: "1. Cook quinoa\n2. Prepare vegetables\n3. Assemble bowl\n4. Add lime dressing\n5. Garnish with cilantro" },
+            { name: "Salmon Teriyaki", cookTime: "20 mins", difficulty: "Easy", emoji: "🐟", rating: 5, category: "main", ingredients: ["Salmon fillets", "Teriyaki sauce", "Rice", "Broccoli", "Sesame seeds"], instructions: "1. Marinate salmon\n2. Cook rice\n3. Steam broccoli\n4. Pan-fry salmon\n5. Serve with vegetables" },
+            { name: "Vegetable Curry", cookTime: "35 mins", difficulty: "Medium", emoji: "🍛", rating: 4, category: "vegetarian", ingredients: ["Mixed vegetables", "Coconut milk", "Curry paste", "Rice", "Cilantro"], instructions: "1. Sauté vegetables\n2. Add curry paste\n3. Pour coconut milk\n4. Simmer 20 minutes\n5. Serve over rice" },
+            { name: "Chicken Wings", cookTime: "40 mins", difficulty: "Easy", emoji: "🍗", rating: 5, category: "main", ingredients: ["Chicken wings", "Hot sauce", "Butter", "Garlic powder", "Celery", "Blue cheese"], instructions: "1. Season wings\n2. Bake 35 minutes\n3. Make buffalo sauce\n4. Toss wings in sauce\n5. Serve with celery" },
+            { name: "Tiramisu", cookTime: "4 hours", difficulty: "Hard", emoji: "🍰", rating: 5, category: "dessert", ingredients: ["Ladyfingers", "Mascarpone", "Coffee", "Eggs", "Sugar", "Cocoa powder"], instructions: "1. Make coffee mixture\n2. Whip mascarpone cream\n3. Dip ladyfingers\n4. Layer in dish\n5. Chill 4 hours" },
+            { name: "Pho Soup", cookTime: "3 hours", difficulty: "Hard", emoji: "🍜", rating: 5, category: "soup", ingredients: ["Beef bones", "Rice noodles", "Beef slices", "Onion", "Ginger", "Star anise"], instructions: "1. Make bone broth\n2. Simmer 2 hours\n3. Cook noodles\n4. Slice beef thin\n5. Assemble bowls with herbs" }
+        ];
+
+        // Initialize app
+        function init() {
+            createParticles();
+            loadUserData();
+            updateDashboard();
+            renderRecipes();
+            populateCalculatorRecipes();
+            applySavedTheme();
+            loadVoices();
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionName;
+        }
+
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('app-theme', newTheme);
+            
+            // Update theme button text
+            const themeBtn = document.querySelector('.nav-btn[onclick="toggleTheme()"]');
+            themeBtn.textContent = newTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        function selectTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('app-theme', theme);
+        }
+
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('app-theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-selector').value = savedTheme;
+                
+                const themeBtn = document.querySelector('.nav-btn[onclick="toggleTheme()"]');
+                themeBtn.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+            }
+            
+            // Load saved voice settings
+            const savedSettings = JSON.parse(localStorage.getItem('app-settings') || '{}');
+            if (savedSettings.voiceRate) {
+                document.getElementById('voice-rate').value = savedSettings.voiceRate;
+                updateVoiceRate(savedSettings.voiceRate);
+            }
+            if (savedSettings.voicePitch) {
+                document.getElementById('voice-pitch').value = savedSettings.voicePitch;
+                updateVoicePitch(savedSettings.voicePitch);
+            }
+        }
+
+        // User management
+        function loadUserData() {
+            const userData = localStorage.getItem('current_user');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                isLoggedIn = true;
+            }
+            
+            favorites = JSON.parse(localStorage.getItem('recipe_favorites') || '[]');
+            userRecipes = JSON.parse(localStorage.getItem('user_recipes') || '[]');
+        }
+
+        function toggleLoginForm() {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function submitLogin() {
+            const name = document.getElementById('login-name').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            if (!name || !password) {
+                showNotification('Please enter both username and password', 'error');
+                return;
+            }
+            
+            // Simple login simulation
+            const users = JSON.parse(localStorage.getItem('recipe_hub_users') || '[]');
+            const user = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === password);
+            
+            if (user || (name === 'demo' && password === 'demo')) {
+                currentUser = user || { name: 'Demo User', phone: '050-1234567' };
+                isLoggedIn = true;
+                localStorage.setItem('current_user', JSON.stringify(currentUser));
+                localStorage.setItem('user_logged_in', 'true');
+                
+                showNotification('Welcome back! 👋', 'success');
+                showSection('home');
+            } else {
+                showNotification('Invalid credentials', 'error');
+            }
+        }
+
+        function submitRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const password = document.getElementById('register-password').value;
+            const phone = document.getElementById('register-phone').value.trim();
+            
+            if (!name || !password || !phone) {
+                showNotification('Please fill all fields', 'error');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('recipe_hub_users') || '[]');
+            const newUser = { name, password, phone };
+            users.push(newUser);
+            localStorage.setItem('recipe_hub_users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            isLoggedIn = true;
+            localStorage.setItem('current_user', JSON.stringify(currentUser));
+            localStorage.setItem('user_logged_in', 'true');
+            
+            showNotification('Account created successfully! 🎉', 'success');
+            showSection('home');
+        }
+
+        // Recipe management
+        function renderRecipes() {
+            const container = document.getElementById('recipe-list');
+            let recipesToShow = [...recipes, ...userRecipes];
+            
+            // Apply filters
+            if (searchQuery) {
+                recipesToShow = recipesToShow.filter(recipe => 
+                    recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    recipe.ingredients.some(ing => ing.toLowerCase().includes(searchQuery.toLowerCase()))
+                );
+            }
+            
+            if (currentCategory !== 'all') {
+                recipesToShow = recipesToShow.filter(recipe => recipe.category === currentCategory);
+            }
+            
+            if (showFavoritesOnly) {
+                recipesToShow = recipesToShow.filter((recipe, index) => favorites.includes(index));
+            }
+            
+            container.innerHTML = recipesToShow.map((recipe, index) => {
+                const originalIndex = recipes.findIndex(r => r === recipe);
+                const isFavorite = favorites.includes(originalIndex);
+                const difficultyClass = `difficulty-${recipe.difficulty.toLowerCase()}`;
+                
+                return `
+                <div class="recipe-card" onclick="showRecipe(${originalIndex >= 0 ? originalIndex : recipes.length + userRecipes.findIndex(r => r === recipe)})">
+                    <div class="favorite-heart ${isFavorite ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${originalIndex >= 0 ? originalIndex : recipes.length + userRecipes.findIndex(r => r === recipe)})">
+                        ${isFavorite ? '❤️' : '🤍'}
+                    </div>
+                    <span class="recipe-emoji">${recipe.emoji}</span>
+                    <h3 class="recipe-name">${recipe.name}</h3>
+                    <div class="recipe-meta">
+                        <span class="meta-item time-meta">⏱️ ${recipe.cookTime}</span>
+                        <span class="meta-item ${difficultyClass}">📊 ${recipe.difficulty}</span>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn btn-success" onclick="event.stopPropagation(); startTimer('${recipe.name}', '${recipe.cookTime}')" style="margin: 5px;">⏰ Timer</button>
+                        <button class="btn btn-warning" onclick="event.stopPropagation(); speakRecipe(${originalIndex >= 0 ? originalIndex : recipes.length + userRecipes.findIndex(r => r === recipe)})">🔊 Read</button>
+                        <button class="btn" onclick="event.stopPropagation(); stopSpeaking()" style="margin: 5px; background: #e17055; color: white;">⏹️ Stop</button>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            if (recipesToShow.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: white; font-size: 1.2em; margin: 50px 0;">No recipes found</div>';
+            }
+        }
+
+        function searchRecipes() {
+            searchQuery = document.getElementById('search-input').value;
+            renderRecipes();
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderRecipes();
+        }
+
+        function toggleFavorites() {
+            showFavoritesOnly = !showFavoritesOnly;
+            const btn = event.target;
+            btn.textContent = showFavoritesOnly ? '📚 All Recipes' : '❤️ Show Favorites';
+            renderRecipes();
+        }
+
+        function toggleFavorite(index) {
+            if (favorites.includes(index)) {
+                favorites = favorites.filter(fav => fav !== index);
+            } else {
+                favorites.push(index);
+            }
+            localStorage.setItem('recipe_favorites', JSON.stringify(favorites));
+            renderRecipes();
+            updateDashboard();
+        }
+
+        function showRecipe(index) {
+            const allRecipes = [...recipes, ...userRecipes];
+            const recipe = allRecipes[index];
+            if (!recipe) return;
+            
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modal-body');
+            
+            modalBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 4em; display: block; margin-bottom: 10px;">${recipe.emoji}</span>
+                    <h2 style="color: var(--text-dark); margin-bottom: 10px;">${recipe.name}</h2>
+                    <div style="margin-bottom: 15px;">
+                        <span class="meta-item time-meta">⏱️ ${recipe.cookTime}</span>
+                        <span class="meta-item difficulty-${recipe.difficulty.toLowerCase()}">📊 ${recipe.difficulty}</span>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: var(--radius); margin: 20px 0;">
+                    <h3 style="color: var(--text-dark); margin-bottom: 15px;">🛒 Ingredients:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        ${recipe.ingredients.map(ingredient => `
+                            <li style="padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                <span style="margin-right: 10px;">✓</span> ${ingredient}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 20px; border-radius: var(--radius); margin: 20px 0;">
+                    <h3 style="color: var(--text-dark); margin-bottom: 15px;">👨‍🍳 Instructions:</h3>
+                    <div style="line-height: 1.6;">${recipe.instructions.replace(/\n/g, '<br><br>')}</div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn btn-primary" onclick="speakText('${recipe.instructions.replace(/'/g, "\\'")}')">🔊 Read Instructions</button>
+                    <button class="btn" onclick="stopSpeaking()" style="margin: 5px; background: #e17055; color: white;">⏹️ Stop Reading</button>
+                    <button class="btn btn-success" onclick="startTimer('${recipe.name}', '${recipe.cookTime}')" style="margin: 5px;">⏰ Start Timer</button>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Recipe creation
+        function addIngredient() {
+            const input = document.getElementById('ingredient-input');
+            const value = input.value.trim();
+            
+            if (value) {
+                ingredients.push(value);
+                input.value = '';
+                renderIngredients();
+            }
+        }
+
+        function addInstruction() {
+            const input = document.getElementById('instruction-input');
+            const value = input.value.trim();
+            
+            if (value) {
+                instructions.push(value);
+                input.value = '';
+                renderInstructions();
+            }
+        }
+
+        function renderIngredients() {
+            const list = document.getElementById('ingredient-list');
+            list.innerHTML = ingredients.map((ingredient, index) => `
+                <li class="ingredient-item">
+                    <span>${ingredient}</span>
+                    <button class="remove-btn" onclick="removeIngredient(${index})">×</button>
+                </li>
+            `).join('');
+        }
+
+        function renderInstructions() {
+            const list = document.getElementById('instruction-list');
+            list.innerHTML = instructions.map((instruction, index) => `
+                <li class="instruction-item">
+                    <span><strong>Step ${index + 1}:</strong> ${instruction}</span>
+                    <button class="remove-btn" onclick="removeInstruction(${index})">×</button>
+                </li>
+            `).join('');
+        }
+
+        function removeIngredient(index) {
+            ingredients.splice(index, 1);
+            renderIngredients();
+        }
+
+        function removeInstruction(index) {
+            instructions.splice(index, 1);
+            renderInstructions();
+        }
+
+        function saveRecipe() {
+            const recipe = {
+                name: document.getElementById('recipe-name').value,
+                cookTime: document.getElementById('cook-time').value,
+                difficulty: document.getElementById('difficulty').value,
+                category: document.getElementById('category').value,
+                emoji: document.getElementById('recipe-emoji').value || '🍽️',
+                ingredients: ingredients,
+                instructions: instructions.join('\n'),
+                rating: 5
+            };
+
+            if (!recipe.name || !recipe.cookTime || ingredients.length === 0 || instructions.length === 0) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            userRecipes.push(recipe);
+            localStorage.setItem('user_recipes', JSON.stringify(userRecipes));
+
+            // Reset form
+            document.getElementById('recipe-name').value = '';
+            document.getElementById('cook-time').value = '';
+            document.getElementById('recipe-emoji').value = '';
+            ingredients = [];
+            instructions = [];
+            renderIngredients();
+            renderInstructions();
+
+            showNotification('Recipe saved successfully! 🎉', 'success');
+            updateDashboard();
+            renderRecipes();
+        }
+
+        // Calculator
+        function populateCalculatorRecipes() {
+            const select = document.getElementById('calc-recipe');
+            const allRecipes = [...recipes, ...userRecipes];
+            
+            select.innerHTML = '<option value="">Choose a recipe...</option>' +
+                allRecipes.map((recipe, index) => 
+                    `<option value="${index}">${recipe.emoji} ${recipe.name}</option>`
+                ).join('');
+        }
+
+        function changeServings(delta) {
+            currentServings = Math.max(1, currentServings + delta);
+            document.getElementById('serving-count').textContent = currentServings;
+            updateCalculation();
+        }
+
+        function updateCalculation() {
+            const select = document.getElementById('calc-recipe');
+            const resultDiv = document.getElementById('calculation-result');
+            const ingredientsDiv = document.getElementById('adjusted-ingredients');
+            
+            if (!select.value) {
+                resultDiv.style.display = 'none';
+                return;
+            }
+            
+            const allRecipes = [...recipes, ...userRecipes];
+            const recipe = allRecipes[parseInt(select.value)];
+            const scaleFactor = currentServings / 4; // Assuming original serves 4
+            
+            ingredientsDiv.innerHTML = recipe.ingredients.map(ingredient => {
+                // Simple scaling - in real app would parse quantities
+                return `<div style="padding: 10px; background: rgba(255,255,255,0.5); margin: 5px 0; border-radius: 8px;">
+                    ${ingredient} (×${scaleFactor.toFixed(1)})
+                </div>`;
+            }).join('');
+            
+            resultDiv.style.display = 'block';
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            document.getElementById('favorites-count').textContent = favorites.length;
+            document.getElementById('user-recipes-count').textContent = userRecipes.length;
+            document.getElementById('recipes-tried').textContent = Math.min(favorites.length + userRecipes.length, recipes.length);
+            document.getElementById('cooking-level').textContent = Math.floor((favorites.length + userRecipes.length) / 3) + 1;
+        }
+
+        // Settings
+        function updateWaitTime(value) {
+            document.getElementById('wait-time-value').textContent = value + 's';
+        }
+
+        function saveSettings() {
+            const settings = {
+                theme: document.getElementById('theme-selector').value,
+                recipeColor: document.getElementById('recipe-color').value,
+                waitTime: document.getElementById('wait-time').value,
+                voiceRate: document.getElementById('voice-rate').value,
+                voicePitch: document.getElementById('voice-pitch').value
+            };
+            
+            localStorage.setItem('app-settings', JSON.stringify(settings));
+            showNotification('Settings saved! ⚙️', 'success');
+        }
+
+        // Voice management
+        let availableVoices = [];
+        let selectedVoice = null;
+        
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                availableVoices = speechSynthesis.getVoices();
+                if (availableVoices.length === 0) {
+                    speechSynthesis.addEventListener('voiceschanged', loadVoices);
+                    return;
+                }
+                
+                const voiceSelector = document.getElementById('voice-selector');
+                if (voiceSelector) {
+                    voiceSelector.innerHTML = availableVoices.map((voice, index) => 
+                        `<option value="${index}">${voice.name} (${voice.lang})</option>`
+                    ).join('');
+                    
+                    // Load saved voice
+                    const savedVoiceIndex = localStorage.getItem('selected-voice');
+                    if (savedVoiceIndex && availableVoices[savedVoiceIndex]) {
+                        voiceSelector.value = savedVoiceIndex;
+                        selectedVoice = availableVoices[savedVoiceIndex];
+                    }
+                }
+            }
+        }
+        
+        function updateVoiceSelection() {
+            const voiceSelector = document.getElementById('voice-selector');
+            const voiceIndex = voiceSelector.value;
+            if (voiceIndex && availableVoices[voiceIndex]) {
+                selectedVoice = availableVoices[voiceIndex];
+                localStorage.setItem('selected-voice', voiceIndex);
+            }
+        }
+        
+        function updateVoiceRate(value) {
+            document.getElementById('voice-rate-value').textContent = value + 'x';
+        }
+        
+        function updateVoicePitch(value) {
+            document.getElementById('voice-pitch-value').textContent = parseFloat(value).toFixed(1);
+        }
+        
+        function testVoice() {
+            const testText = 'Hello! This is a test of the selected voice. How does it sound?';
+            speak(testText);
+        }
+
+        // Utility functions
+        function speakRecipe(recipeIndex) {
+            const allRecipes = [...recipes, ...userRecipes];
+            const recipe = allRecipes[recipeIndex];
+            if (recipe) {
+                speak(recipe.instructions);
+            }
+        }
+        
+        function speakText(text) {
+            speak(text);
+        }
+        
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                // Split text into lines and read with pauses
+                const lines = text.split('\n').filter(line => line.trim());
+                const waitTime = parseInt(document.getElementById('wait-time')?.value || 3) * 1000;
+                const rate = parseFloat(document.getElementById('voice-rate')?.value || 0.8);
+                const pitch = parseFloat(document.getElementById('voice-pitch')?.value || 1);
+                
+                showNotification('🔊 Reading recipe instructions...', 'success');
+                
+                let currentLine = 0;
+                let isReading = true;
+                
+                function readNextLine() {
+                    if (currentLine < lines.length && isReading) {
+                        const utterance = new SpeechSynthesisUtterance(lines[currentLine]);
+                        utterance.rate = rate;
+                        utterance.pitch = pitch;
+                        utterance.volume = 1;
+                        
+                        if (selectedVoice) {
+                            utterance.voice = selectedVoice;
+                        }
+                        
+                        utterance.onend = function() {
+                            currentLine++;
+                            if (currentLine < lines.length && isReading) {
+                                setTimeout(readNextLine, waitTime);
+                            } else if (isReading) {
+                                showNotification('✅ Finished reading recipe!', 'success');
+                            }
+                        };
+                        
+                        window.speechSynthesis.speak(utterance);
+                    }
+                }
+                
+                // Store reading state globally
+                window.currentReading = { isReading: true, stop: () => { isReading = false; } };
+                
+                readNextLine();
+            } else {
+                showNotification('Speech synthesis not supported in your browser', 'error');
+            }
+        }
+        
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                if (window.currentReading) {
+                    window.currentReading.stop();
+                }
+                showNotification('⏹️ Reading stopped', 'warning');
+            }
+        }
+
+        function startTimer(recipeName, cookTime) {
+            const minutes = parseInt(cookTime.match(/\d+/)[0]);
+            showNotification(`⏰ Timer started: ${minutes} minutes for ${recipeName}`, 'success');
+            
+            setTimeout(() => {
+                showNotification(`🔔 Timer finished! ${recipeName} is ready!`, 'success');
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(`Timer finished! ${recipeName} is ready!`);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.2;
+                    utterance.volume = 1;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }, minutes * 60 * 1000);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} show`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Event listeners
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) closeModal();
+        }
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('ingredient-input') === document.activeElement) {
+                    addIngredient();
+                } else if (document.getElementById('instruction-input') === document.activeElement && e.ctrlKey) {
+                    addInstruction();
+                }
+            }
+        });
+
+        // Initialize app when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
